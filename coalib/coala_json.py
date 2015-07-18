@@ -14,7 +14,7 @@
 import json
 
 from coalib.output.printers.ListLogPrinter import ListLogPrinter
-from coalib.processes.Processing import execute_section
+from coalib.processes.Processing import execute_all_sections
 from coalib.settings.ConfigurationGathering import gather_configuration
 from coalib.results.HiddenResult import HiddenResult
 from coalib.output.JSONEncoder import JSONEncoder
@@ -35,18 +35,13 @@ def main():
          global_bears,
          targets) = gather_configuration(fail_acquire_settings, log_printer)
 
-        for section_name in sections:
-            section = sections[section_name]
-            if not section.is_enabled(targets):
-                continue
+        section_results = execute_all_sections(sections,
+                                               targets,
+                                               log_printer,
+                                               global_bears,
+                                               local_bears)
 
-            section_result = execute_section(
-                section=section,
-                global_bear_list=global_bears[section_name],
-                local_bear_list=local_bears[section_name],
-                print_results=lambda *args: True,
-                log_printer=log_printer,
-                file_diff_dict={})
+        for section_name, section_result in section_results:
             yielded_results = yielded_results or section_result[0]
 
             results_for_section = []
