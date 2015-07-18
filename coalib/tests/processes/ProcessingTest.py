@@ -11,10 +11,12 @@ sys.path.insert(0, ".")
 from coalib.results.HiddenResult import HiddenResult
 from coalib.settings.ConfigurationGathering import gather_configuration
 from coalib.output.printers.LogPrinter import LogPrinter
-from coalib.processes.Processing import execute_section
 from coalib.output.printers.ConsolePrinter import ConsolePrinter
 from coalib.processes.CONTROL_ELEMENT import CONTROL_ELEMENT
-from coalib.processes.Processing import process_queues, create_process_group
+from coalib.processes.Processing import (execute_section,
+                                         process_queues,
+                                         create_process_group,
+                                         execute_all_sections)
 from coalib.misc.Constants import Constants
 from coalib.settings.Section import Section
 
@@ -200,6 +202,22 @@ class ProcessingTest(unittest.TestCase):
             # There is no way of testing this on windows with the current python
             # modules subprocess and os
             self.assertEqual(p.pid, pgid)
+
+    def test_execute_all_sections(self):
+        global execute_section
+
+        _execute_section = execute_section
+        execute_section = lambda *args, **kwargs: True
+        sections = [Section("key1", "val1")]
+        execute_all_sections(sections=self.sections,
+                             targets=None,
+                             log_printer=None,
+                             global_bears=None,
+                             local_bears=None,
+                             section_beginning=lambda *args: True,
+                             print_results=lambda *args: True,
+                             finalize=lambda *args: True)
+        execute_section = _execute_section
 
 
 if __name__ == '__main__':

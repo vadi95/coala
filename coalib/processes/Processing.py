@@ -352,3 +352,51 @@ def execute_section(section,
 
         for runner in processes:
             runner.join()
+
+
+def execute_all_sections(sections,
+                         targets,
+                         log_printer,
+                         global_bears,
+                         local_bears,
+                         section_beginning=lambda *args: True,
+                         print_results=lambda *args: True,
+                         finalize=lambda *args: True):
+    """
+    Executes all the sections with their respective bears if if is enabled.
+
+    :param sections:          A list of section names that need to be
+                              executed.
+    :param targets:           The targets list
+    :param log_printer:       The log_printer to warn to.
+    :param global_bears:      A dictionary with keys as section names
+                              and values are a list of global_bears
+                              belonging to that section.
+    :param local_bears:       A dictionary with keys as section names
+                              and values are a list of local_bears
+                              belonging to that section.
+    :param section_beginning: A function to call before each section.
+    :param print_results:     Prints the result to console.
+    :param finalize:          To be called after all results have been found.
+    :return:                  A list of tuples containing
+                              (section_name, section_results).
+    """
+    section_results = []
+    for section_name in sections:
+        section = sections[section_name]
+        if not section.is_enabled(targets):
+            continue
+
+        file_diff_dict = {}
+        section_beginning(section)
+        results = execute_section(
+            section=section,
+            global_bear_list=global_bears[section_name],
+            local_bear_list=local_bears[section_name],
+            print_results=print_results,
+            log_printer=log_printer,
+            file_diff_dict=file_diff_dict)
+        section_results.append((section_name, results))
+        finalize(file_diff_dict, results[3])
+
+    return section_results
