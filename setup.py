@@ -5,16 +5,8 @@ import setuptools.command.build_py
 
 from coalib import assert_supported_version
 assert_supported_version()
-from coalib.misc.BuildManPage import BuildManPage
 from coalib.output.dbus.BuildDbusService import BuildDbusService
 from coalib.misc.Constants import Constants
-
-
-class BuildPyCommand(setuptools.command.build_py.build_py):
-    def run(self):
-        self.run_command('build_manpage')
-        self.run_command('build_dbus')
-        setuptools.command.build_py.build_py.run(self)
 
 
 if __name__ == "__main__":
@@ -22,7 +14,6 @@ if __name__ == "__main__":
     maintainer_mails = ('lasse.schuirmann@gmail.com, '
                         'fabian@neuschmidt.de, '
                         'makman@alice.de')
-    data_files = [('.', ['coala.1']), ('.', [Constants.BUS_NAME + '.service'])]
 
     setup(name='coala',
           version=Constants.VERSION,
@@ -44,10 +35,10 @@ if __name__ == "__main__":
                             "autopep8",
                             "eradicate",
                             "autoflake",
-                            "restructuredtext_lint"],
+                            "restructuredtext_lint",
+                            "language-check"],
           package_data={'coalib': ['default_coafile', "VERSION"]},
           license="AGPL v3",
-          data_files=data_files,
           long_description="coala is a simple COde AnaLysis Application. Its "
                            "goal is to make static code analysis easy while "
                            "remaining completely modular and therefore "
@@ -91,7 +82,4 @@ if __name__ == "__main__":
 
               'Topic :: Scientific/Engineering :: Information Analysis',
               'Topic :: Software Development :: Quality Assurance',
-              'Topic :: Text Processing :: Linguistic'],
-          cmdclass={'build_manpage': BuildManPage,
-                    'build_dbus': BuildDbusService,
-                    'build_py': BuildPyCommand})
+              'Topic :: Text Processing :: Linguistic'])
