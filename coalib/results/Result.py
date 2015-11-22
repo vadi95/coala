@@ -34,9 +34,11 @@ class Result:
                  debug_msg="",
                  diffs: (dict, None)=None):
         """
-        :param origin:        Class name or class of the creator of this object.
+        :param origin:        Class name or class of the creator of this
+                              object.
         :param message:       Message to show with this result.
-        :param affected_code: A tuple of SourceRange objects pointing to related
+        :param affected_code: A tuple of SourceRange objects pointing to
+                              related
                               positions in the source code.
         :param severity:      Severity of this result.
         :param debug_msg:     A message which may help the user find out why
@@ -79,9 +81,11 @@ class Result:
         :param origin:     Class name or class of the creator of this object.
         :param message:    A message to explain the result.
         :param file:       The related file.
-        :param line:       The first related line in the file. (First line is 1)
+        :param line:       The first related line in the file. 
+                           (First line is 1)
         :param column:     The column indicating the first character. (First
-                           character is 1)
+        :param line:       The first related line in the file.
+                           (First line is 1)
         :param end_line:   The last related line in the file.
         :param end_column: The column indicating the last character.
         :param severity:   A RESULT_SEVERITY object.
@@ -125,9 +129,11 @@ class Result:
             retval[member] = "" if value == None else str(value)
 
         retval["severity"] = str(RESULT_SEVERITY.reverse.get(self.severity, ""))
-        if len(self.affected_code) > 0:
-            retval["file"] = self.affected_code[0].file
-            line = self.affected_code[0].start.line
+        retval["severity"] = str(RESULT_SEVERITY.reverse.get(
+            self.severity, ""))
+        retval["file"] = self.affected_code[0].file
+        retval["severity"] = str(RESULT_SEVERITY.reverse.get(
+            self.severity, ""))
             retval["line_nr"] = "" if line is None else str(line)
         else:
             retval["file"], retval["line_nr"] = "", ""
