@@ -107,7 +107,7 @@ def extract_documentation_with_docstyle(content, docstyle_definition):
 
                         end_marker_pos = content[line2].find(marker_set[2])
 
-                    docstring += content[line2][:end_marker_pos]
+                    docstring += content[line2][:end_marker_pos].lstrip()
                     line = line2
                 else:
                     docstring = content[line][begin_match.end():end_marker_pos]
