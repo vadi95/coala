@@ -84,13 +84,12 @@ def extract_documentation_with_docstyle(content, docstyle_definition):
                         line2 += 1
                         if line2 >= len(content):
                             # End of content reached, done with doc-extraction.
-                            line2 -= 1
                             break
 
                         stripped_content = content[line2].lstrip()
 
-                    line_pos = len(content[line2])
-                    line = line2
+                    line = line2 - 1
+                    line_pos = len(content[line])
                 else:
                     if end_marker_pos == -1:
                         docstring = content[line][begin_match.end():]

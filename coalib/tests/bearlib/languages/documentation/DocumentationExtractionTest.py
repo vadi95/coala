@@ -105,8 +105,8 @@ class DocumentationExtractionTest(unittest.TestCase):
                           DocumentationComment(
                               " Some alternate style of documentation\n",
                               docstyle_CPP_doxygen,
-                              docstyle_CPP_doxygen.markers[2],
-                              TextRange.from_values(22, 1, 22, 42)),
+                              docstyle_CPP_doxygen.markers[4],
+                              TextRange.from_values(22, 1, 22, 43)),
                           DocumentationComment(
                               (" Should work\n"
                                "\n"
@@ -114,7 +114,7 @@ class DocumentationExtractionTest(unittest.TestCase):
                                "\n"
                                " @param foo WHAT PARAM PLEASE!?\n"),
                               docstyle_CPP_doxygen,
-                              docstyle_CPP_doxygen.markers[2],
+                              docstyle_CPP_doxygen.markers[4],
                               TextRange.from_values(26, 1, 30, 36))))
 
     @unittest.skip("INFINITE LOOP")
