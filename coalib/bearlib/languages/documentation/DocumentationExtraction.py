@@ -114,9 +114,9 @@ def extract_documentation_with_docstyle(content, docstyle_definition):
 
                 line_pos = end_marker_pos + len(marker_set[2])
 
-                rng = TextRange.from_values(begin_match_line,
+                rng = TextRange.from_values(begin_match_line + 1,
                                             begin_match.start(),
-                                            line,
+                                            line + 1,
                                             line_pos)
 
                 yield DocumentationComment(docstring,

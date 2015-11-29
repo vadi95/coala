@@ -39,8 +39,10 @@ class TextRange:
         """
         Creates a new TextRange.
 
-        :param start_line:   The line number of the start position.
-        :param start_column: The column number of the start position.
+        :param start_line:   The line number of the start position. The first
+                             line is 1.
+        :param start_column: The column number of the start position. The first
+                             column is 1.
         :param end_line:     The line number of the end position. If this
                              parameter is `None`, then the end position is set
                              the same like start position and end_column gets

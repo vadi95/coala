@@ -11,6 +11,7 @@ from coalib.bearlib.languages.documentation.DocumentationExtraction import (
     extract_documentation,
     extract_documentation_with_docstyle)
 from coalib.misc.Compatability import FileNotFoundError
+from coalib.results.TextRange import TextRange
 
 
 # TODO Insert alternate-style (for doxygen) comments between normal ones to
@@ -59,10 +60,7 @@ class DocumentationExtractionTest(unittest.TestCase):
         with self.assertRaises(KeyError):
             tuple(extract_documentation(data, "C", "default"))
 
-        C_marker = ("/**", "*", "*/")
-        docstyle_C_doxygen = DocstyleDefinition("C",
-                                                "doxygen",
-                                                (C_marker,))
+        docstyle_C_doxygen = DocstyleDefinition.load("C", "doxygen")
 
         self.assertEqual(tuple(extract_documentation(data, "C", "doxygen")),
                          (DocumentationComment(
@@ -71,14 +69,14 @@ class DocumentationExtractionTest(unittest.TestCase):
                                "\n"
                                " @returns Your favorite number.\n"),
                               docstyle_C_doxygen,
-                              C_marker,
-                              (21, 95)),
+                              docstyle_C_doxygen.markers[0],
+                              TextRange.from_values(3, 0, 7, 3)),
                           DocumentationComment(
                               (" foobar = barfoo.\n"
                                " @param x whatever...\n"),
                               docstyle_C_doxygen,
-                              C_marker,
-                              (182, 230))))
+                              docstyle_C_doxygen.markers[0],
+                              TextRange.from_values(15, 0, 17, 3))))
 
     def test_extract_documentation_CPP(self):
         data = DocumentationExtractionTest.load_testdata(".cpp")
