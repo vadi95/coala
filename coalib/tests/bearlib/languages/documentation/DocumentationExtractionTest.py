@@ -152,7 +152,7 @@ class DocumentationExtractionTest(unittest.TestCase):
                         TextRange.from_values(14, 1, 19, 4)),
                     DocumentationComment(
                         (" Docstring directly besides triple quotes.\n"
-                         "Continues here. "),
+                         " Continues here. "),
                         docstyle_PYTHON3_default,
                         docstyle_PYTHON3_default.markers[0],
                         TextRange.from_values(21, 1, 22, 24)))
