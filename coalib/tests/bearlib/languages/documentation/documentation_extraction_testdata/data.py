@@ -14,7 +14,7 @@ def foobar_explosion(radius):
 """
 Docstring with layouted text.
 
-    layouts inside docs are not preserved for these documentation styles.
+    layouts inside docs are preserved for these documentation styles.
 this is intended.
 """
 
