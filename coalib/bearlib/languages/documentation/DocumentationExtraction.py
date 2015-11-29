@@ -30,7 +30,7 @@ def extract_documentation_with_docstyle(content, docstyle_definition):
     """
     if isinstance(content, str):
         content_len = len(content)
-        content = content.splitlines()
+        content = content.splitlines(keepends=True)
     else:
         content = list(content)
         content_len = sum(len(line) for line in content)
@@ -43,9 +43,9 @@ def extract_documentation_with_docstyle(content, docstyle_definition):
     begin_sequence_dict = {}
     for marker_set in docstyle_definition.markers:
         if marker_set[0] not in begin_sequence_dict:
-            begin_sequence_dict[marker_set[0]] = [marker_set[0]]
+            begin_sequence_dict[marker_set[0]] = [marker_set]
         else:
-            begin_sequence_dict[marker_set[0]].append(marker_set[0])
+            begin_sequence_dict[marker_set[0]].append(marker_set)
 
     # Using regexes to perform a variable match is faster than finding each
     # substring with `str.find()` choosing the lowest match.
