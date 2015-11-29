@@ -119,9 +119,6 @@ def extract_documentation_with_docstyle(content, docstyle_definition):
                             # TODO: Consider these cases:
                             #   """hello
                             #   world"""
-                            # TODO AND
-                            #  /**
-                            # x * An x before the asterisk */
                             # TODO Test also other C style doccomments
 
                             docstring += stripped_content

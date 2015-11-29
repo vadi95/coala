@@ -62,6 +62,8 @@ class DocumentationExtractionTest(unittest.TestCase):
 
         docstyle_C_doxygen = DocstyleDefinition.load("C", "doxygen")
 
+        # TODO: Conside escaping some spaces inside the lang configuration for
+        #       better docstring alignment
         self.assertEqual(tuple(extract_documentation(data, "C", "doxygen")),
                          (DocumentationComment(
                               ("\n"
@@ -72,11 +74,28 @@ class DocumentationExtractionTest(unittest.TestCase):
                               docstyle_C_doxygen.markers[0],
                               TextRange.from_values(3, 1, 7, 4)),
                           DocumentationComment(
+                              ("\n"
+                               " Preserves alignment\n"
+                               " - Main item\n"
+                               "   - sub item\n"
+                               "     - sub sub item\n"),
+                              docstyle_C_doxygen,
+                              docstyle_C_doxygen.markers[0],
+                              TextRange.from_values(15, 1, 20, 4)),
+                          DocumentationComment(
+                              (" ABC\n"
+                               " Another type of comment\n"
+                               "\n"
+                               " ...\n"),
+                              docstyle_C_doxygen,
+                              docstyle_C_doxygen.markers[0],
+                              TextRange.from_values(23, 1, 26, 10)),
+                          DocumentationComment(
                               (" foobar = barfoo.\n"
                                " @param x whatever...\n"),
                               docstyle_C_doxygen,
                               docstyle_C_doxygen.markers[0],
-                              TextRange.from_values(15, 1, 17, 4))))
+                              TextRange.from_values(28, 1, 30, 4))))
 
     def test_extract_documentation_CPP(self):
         data = DocumentationExtractionTest.load_testdata(".cpp")
