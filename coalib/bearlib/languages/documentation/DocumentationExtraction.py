@@ -132,11 +132,11 @@ def extract_documentation_with_docstyle(content, docstyle_definition):
                             end_marker_pos = content[line2].find(marker_set[2])
 
                         docstring += (
-                            content[line2][begin_match.end():end_marker_pos])
+                            content[line2][begin_match.start():end_marker_pos])
                         line = line2
                     else:
                         docstring = (
-                            content[line][begin_match.end():end_marker_pos])
+                            content[line][begin_match.start():end_marker_pos])
 
                     line_pos = end_marker_pos + len(marker_set[2])
 

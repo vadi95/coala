@@ -31,3 +31,7 @@ def foobar_travel(country):
     print("foobar likes to travel to " + country)
     smile = ":)"
     return smile
+
+"""super
+ nicely
+short"""
