@@ -111,6 +111,7 @@ class DocumentationExtractionTest(unittest.TestCase):
         # TODO Adjust test results to new white-space escape lang specification
         #      (i.e. `/**, \ *\ , \ */`)
         # TODO Fix ConfParser with handling these values from TODO above.
+        #      UPDATE: StringConverter is the problem here^^
         self.assertEqual(tuple(extract_documentation(data, "CPP", "doxygen")),
                          (DocumentationComment(
                               ("\n"
