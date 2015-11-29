@@ -70,13 +70,13 @@ class DocumentationExtractionTest(unittest.TestCase):
                                " @returns Your favorite number.\n"),
                               docstyle_C_doxygen,
                               docstyle_C_doxygen.markers[0],
-                              TextRange.from_values(3, 0, 7, 3)),
+                              TextRange.from_values(3, 1, 7, 4)),
                           DocumentationComment(
                               (" foobar = barfoo.\n"
                                " @param x whatever...\n"),
                               docstyle_C_doxygen,
                               docstyle_C_doxygen.markers[0],
-                              TextRange.from_values(15, 0, 17, 3))))
+                              TextRange.from_values(15, 1, 17, 4))))
 
     def test_extract_documentation_CPP(self):
         data = DocumentationExtractionTest.load_testdata(".cpp")
@@ -85,11 +85,7 @@ class DocumentationExtractionTest(unittest.TestCase):
         with self.assertRaises(KeyError):
             tuple(extract_documentation(data, "CPP", "default"))
 
-        CPP_marker1 = ("/**", "*", "*/")
-        CPP_marker2 = ("///", "///", "///")
-        docstyle_CPP_doxygen = DocstyleDefinition("CPP",
-                                                  "doxygen",
-                                                  (CPP_marker1, CPP_marker2))
+        docstyle_CPP_doxygen = DocstyleDefinition.load("CPP", "doxygen")
 
         self.assertEqual(tuple(extract_documentation(data, "CPP", "doxygen")),
                          (DocumentationComment(
@@ -98,19 +94,19 @@ class DocumentationExtractionTest(unittest.TestCase):
                                " @returns Exit code.\n"
                                "          Or any other number.\n"),
                               docstyle_CPP_doxygen,
-                              CPP_marker1,
-                              (22, 115)),
+                              docstyle_CPP_doxygen.markers[0],
+                              TextRange.from_values(4, 1, 8, 4)),
                           DocumentationComment(
                               (" foobar\n"
                                " @param xyz\n"),
                               docstyle_CPP_doxygen,
-                              CPP_marker1,
-                              (174, 202)),
+                              docstyle_CPP_doxygen.markers[0],
+                              TextRange.from_values(15, 1, 17, 4)),
                           DocumentationComment(
                               " Some alternate style of documentation\n",
                               docstyle_CPP_doxygen,
-                              CPP_marker2,
-                              (256, 298)),
+                              docstyle_CPP_doxygen.markers[2],
+                              TextRange.from_values(22, 1, 22, 42)),
                           DocumentationComment(
                               (" Should work\n"
                                "\n"
@@ -118,8 +114,8 @@ class DocumentationExtractionTest(unittest.TestCase):
                                "\n"
                                " @param foo WHAT PARAM PLEASE!?\n"),
                               docstyle_CPP_doxygen,
-                              CPP_marker2,
-                              (324, 427))))
+                              docstyle_CPP_doxygen.markers[2],
+                              TextRange.from_values(26, 1, 30, 36))))
 
     @unittest.skip("INFINITE LOOP")
     def test_extract_documentation_PYTHON3(self):

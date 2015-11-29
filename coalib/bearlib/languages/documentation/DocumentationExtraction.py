@@ -96,6 +96,7 @@ def extract_documentation_with_docstyle(content, docstyle_definition):
                         # TODO AND
                         #  /**
                         # x * An x before the asterisk */
+                        # TODO Test also other C style doccomments
 
                         docstring += stripped_content
                         line2 += 1
@@ -115,9 +116,9 @@ def extract_documentation_with_docstyle(content, docstyle_definition):
                 line_pos = end_marker_pos + len(marker_set[2])
 
                 rng = TextRange.from_values(begin_match_line + 1,
-                                            begin_match.start(),
+                                            begin_match.start() + 1,
                                             line + 1,
-                                            line_pos)
+                                            line_pos + 1)
 
                 yield DocumentationComment(docstring,
                                            docstyle_definition,
