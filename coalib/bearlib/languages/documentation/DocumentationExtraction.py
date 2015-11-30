@@ -35,6 +35,10 @@ def extract_documentation_with_docstyle(content, docstyle_definition):
         content = list(content)
         content_len = sum(len(line) for line in content)
 
+    # Used to break out of outer loops via exception raise.
+    class BreakOut(Exception):
+        pass
+
     # Prepare marker-tuple dict that maps a begin pattern to the corresponding
     # marker_set(s). This makes it faster to retrieve a marker-set from a
     # begin sequence we initially want to search for in source code. Then
@@ -57,99 +61,108 @@ def extract_documentation_with_docstyle(content, docstyle_definition):
     line_pos = 0
     while line < len(content):
         begin_match = begin_regex.search(content[line], line_pos)
+
         if begin_match:
             begin_match_line = line
 
             # begin_sequence_dict[begin_match.group()] returns the marker set
             # the begin sequence from before matched.
             for marker_set in begin_sequence_dict[begin_match.group()]:
-                end_marker_pos = content[line].find(marker_set[2],
-                                                    begin_match.end())
-
-                # If the each-line marker and the end marker do equal, search
-                # for the each-line marker until it runs out.
-                if marker_set[1] == marker_set[2]:
-                    docstring = content[line][begin_match.end():]
-
-                    line2 = line + 1
-                    stripped_content = content[line2].lstrip()
-
-                    # Now the each-line marker is no requirement for a
-                    # docstring any more, just extract as long as there are no
-                    # each-line markers any more.
-                    while (stripped_content[:len(marker_set[1])] ==
-                           marker_set[1]):
-                        docstring += stripped_content[len(marker_set[1]):]
-
-                        line2 += 1
-                        if line2 >= len(content):
-                            # End of content reached, done with doc-extraction.
-                            break
-
-                        stripped_content = content[line2].lstrip()
-
-                    line = line2 - 1
-                    line_pos = len(content[line])
-                else:
-                    if end_marker_pos == -1:
+                try:
+                    end_marker_pos = content[line].find(marker_set[2],
+                                                        begin_match.end())
+                    # If the each-line marker and the end marker do equal, search
+                    # for the each-line marker until it runs out.
+                    if marker_set[1] == marker_set[2]:
                         docstring = content[line][begin_match.end():]
 
                         line2 = line + 1
-                        end_marker_pos = content[line2].find(marker_set[2])
+                        stripped_content = content[line2].lstrip()
 
-                        while end_marker_pos == -1:
-                            if marker_set[1] == "":
-                                # When no each-line marker is set (i.e. for
-                                # Python docstrings), then align the comment to
-                                # the start-marker.
-                                stripped_content = (
-                                    content[line2][begin_match.start():])
-                            else:
-                                stripped_content = content[line2].lstrip()
+                        # Now the each-line marker is no requirement for a
+                        # docstring any more, just extract as long as there are no
+                        # each-line markers any more.
+                        while (stripped_content[:len(marker_set[1])] ==
+                               marker_set[1]):
+                            docstring += stripped_content[len(marker_set[1]):]
 
-                                # Check whether we violate the each-line marker
-                                # "rule".
-                                if (stripped_content[:len(marker_set[1])] !=
-                                        marker_set[1]):
-                                    continue
-
-                                stripped_content = (
-                                    stripped_content[len(marker_set[1]):])
-
-                            # TODO: Consider these cases:
-                            #   """hello
-                            #   world"""
-                            # TODO Test also other C style doccomments
-
-                            docstring += stripped_content
                             line2 += 1
-
                             if line2 >= len(content):
-                                # End of content reached, so there's no closing
-                                # marker and that's a mismatch.
-                                continue
+                                # End of content reached, done with doc-extraction.
+                                break
 
+                            stripped_content = content[line2].lstrip()
+
+                        line = line2 - 1
+                        line_pos = len(content[line])
+                    else:
+                        if end_marker_pos == -1:
+                            docstring = content[line][begin_match.end():]
+
+                            line2 = line + 1
                             end_marker_pos = content[line2].find(marker_set[2])
 
-                        docstring += (
-                            content[line2][begin_match.start():end_marker_pos])
-                        line = line2
-                    else:
-                        docstring = (
-                            content[line][begin_match.start():end_marker_pos])
+                            while end_marker_pos == -1:
+                                if marker_set[1] == "":
+                                    # When no each-line marker is set (i.e. for
+                                    # Python docstrings), then align the comment to
+                                    # the start-marker.
+                                    stripped_content = (
+                                        content[line2][begin_match.start():])
+                                else:
+                                    # Check whether we violate the each-line marker
+                                    # "rule".
+                                    current_each_line_marker = (content[line2]
+                                        [begin_match.start():
+                                         begin_match.start() + len(marker_set[1])])
+                                    if (current_each_line_marker != marker_set[1]):
+                                        # Effectively a 'continue' for the
+                                        # outer for-loop.
+                                        raise BreakOut
 
-                    line_pos = end_marker_pos + len(marker_set[2])
+                                    stripped_content = (
+                                        content[line2][begin_match.start() + len(marker_set[1]):])
 
-                rng = TextRange.from_values(begin_match_line + 1,
-                                            begin_match.start() + 1,
-                                            line + 1,
-                                            line_pos + 1)
+                                # TODO: Consider these cases:
+                                #   """hello
+                                #   world"""
+                                # TODO Test also other C style doccomments
 
-                yield DocumentationComment(docstring,
-                                           docstyle_definition,
-                                           marker_set,
-                                           rng)
-                break
+                                docstring += stripped_content
+                                line2 += 1
+
+                                if line2 >= len(content):
+                                    # End of content reached, so there's no closing
+                                    # marker and that's a mismatch.
+                                    raise BreakOut
+
+                                end_marker_pos = content[line2].find(marker_set[2])
+
+                            docstring += (
+                                content[line2][begin_match.start():end_marker_pos])
+                            line = line2
+                        else:
+                            docstring = (
+                                content[line][begin_match.start():end_marker_pos])
+
+                        line_pos = end_marker_pos + len(marker_set[2])
+
+                    rng = TextRange.from_values(begin_match_line + 1,
+                                                begin_match.start() + 1,
+                                                line + 1,
+                                                line_pos + 1)
+
+                    yield DocumentationComment(docstring,
+                                               docstyle_definition,
+                                               marker_set,
+                                               rng)
+
+                    break
+
+                except BreakOut:
+                    # Continues the marker_set loop.
+                    pass
+
         else:
             line += 1
             line_pos = 0

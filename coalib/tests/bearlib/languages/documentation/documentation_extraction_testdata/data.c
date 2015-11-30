@@ -23,7 +23,7 @@ int myfield;
 /** ABC
     Another type of comment
 
-    ...*/
+    ... */
 
 /** foobar = barfoo.
  * @param x whatever...
