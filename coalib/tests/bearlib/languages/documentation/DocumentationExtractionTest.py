@@ -134,7 +134,6 @@ class DocumentationExtractionTest(unittest.TestCase):
                               docstyle_CPP_doxygen.markers[4],
                               TextRange.from_values(26, 1, 30, 36))))
 
-    @unittest.skip("")
     def test_extract_documentation_PYTHON3(self):
         data = DocumentationExtractionTest.load_testdata(".py")
 
