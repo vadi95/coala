@@ -58,7 +58,7 @@ class StringConverterTest(unittest.TestCase):
                                    list_delimiters=", !",
                                    strip_whitespaces=True)
         self.assertEqual(list(self.uut),
-                         ["a", "test", "with", "some", "\\ challenge"])
+                         ["a", "test", "with", "some", "\\ challenge "])
         self.uut = StringConverter("testval", list_delimiters=[",", "¸"])
         self.uut.value = "a\\n,bug¸g"
         self.assertEqual(list(self.uut), ["an", "bug", "g"])
@@ -75,6 +75,17 @@ class StringConverterTest(unittest.TestCase):
                                    list_delimiters=[","],
                                    strip_whitespaces=False)
         self.assertEqual(list(self.uut), ["a", " test", " \n"])
+
+    def test_iterator_escape_whitespaces(self):
+        uut = StringConverter("ta, chi, tsu, te, \ to", list_delimiters=",")
+        self.assertEqual(list(uut), ["ta", "chi", "tsu", "te", " to"])
+
+        uut = StringConverter("/**, \ *\ , \ */", list_delimiters=",")
+        self.assertEqual(list(uut), ["/**", " * ", " */"])
+
+        uut = StringConverter("abc\\\\ , def\\ \\ \\ ,   \\\\ unstrip \\\\\\  ",
+                              list_delimiters=",")
+        self.assertEqual(list(uut), ["abc\\", "def   ", "\\ unstrip \\ "])
 
     def test_iterator_remove_empty_iter_elements(self):
         uut = StringConverter("a, b, c, , e, , g", list_delimiters=",")
