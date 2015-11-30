@@ -111,6 +111,21 @@ class StringConverterTest(unittest.TestCase):
                               remove_empty_iter_elements=False)
         self.assertEqual(list(uut), ["", "", "", "", ""])
 
+    def test_dict_escape_whitespaces(self):
+        uut = StringConverter("\\  : \\  , hello: \\ world, \\\\ A \\\\ : B\\ ")
+        self.assertEqual(dict(uut), {" ": " ",
+                                     "hello": " world",
+                                     "\\ A \\": "B "})
+
+        uut = StringConverter("/**, \ *\ , \ */")
+        self.assertEqual(dict(uut), {"/**": "", " * ": "", " */": ""})
+
+        uut = StringConverter("abc\\\\  :    qew, def\\ \\ \\ ,"
+                              "   \\\\ unstrip \\\\\\  ")
+        self.assertEqual(dict(uut), {"abc\\": "qew",
+                                     "def   ": "",
+                                     "\\ unstrip \\ ": ""})
+
     def test_dict_conversion(self):
         self.uut = StringConverter("test")
         self.assertEqual(dict(self.uut), {"test": ""})
