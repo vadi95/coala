@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+from urllib.request import urlopen
+from shutil import copyfileobj
+from os.path import exists
+from sys import stdout
 from setuptools import setup, find_packages
 import setuptools.command.build_py
 
@@ -8,6 +12,27 @@ assert_supported_version()
 from coalib.misc.BuildManPage import BuildManPage
 from coalib.output.dbus.BuildDbusService import BuildDbusService
 from coalib.misc import Constants
+
+
+def download(url: str, filename: str, overwrite: bool=False):
+    """
+    Downloads the given URL to the given filename. If the file exists, it won't
+    be downloaded.
+
+    :param url:       A URL to download.
+    :param filename:  The file to store the downloaded file to.
+    :param overwrite: Set to True if the file should be downloaded even if it
+                      already exists.
+    :return:          The filename.
+    """
+    if not exists(filename) or overwrite:
+        print("Downloading", filename + "...", end='')
+        stdout.flush()
+        with urlopen(url) as response, open(filename, 'wb') as out_file:
+            copyfileobj(response, out_file)
+        print(" DONE.")
+
+    return filename
 
 
 class BuildPyCommand(setuptools.command.build_py.build_py):
@@ -27,7 +52,12 @@ if __name__ == "__main__":
     maintainer_mails = ('lasse.schuirmann@gmail.com, '
                         'fabian@neuschmidt.de, '
                         'makman@alice.de')
-    data_files = [('.', ['coala.1']), ('.', [Constants.BUS_NAME + '.service'])]
+    data_files = [
+        ('.', ['coala.1']),
+        ('.', [Constants.BUS_NAME + '.service']),
+        ('bears/java', [download('http://repo1.maven.org/maven2/com/puppycrawl/'
+                                 'tools/checkstyle/6.9/checkstyle-6.9.jar',
+                                 'bears/java/checkstyle.jar')])]
 
     setup(name='coala',
           version=Constants.VERSION,
